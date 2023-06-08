@@ -1,5 +1,7 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 
-export const App = () => {
-  return <div>React homework template</div>;
-};
+export default class App extends Component {
+  render() {
+    return;
+  }
+}
