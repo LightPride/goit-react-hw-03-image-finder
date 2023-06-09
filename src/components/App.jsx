@@ -4,18 +4,18 @@ import ImageGallery from './ImageGallery/ImageGallery';
 
 export default class App extends Component {
   state = {
-    imageName: '',
+    searchValue: '',
   };
 
-  handleFormSubmit = imageName => {
-    this.setState({ imageName });
+  handleFormSubmit = searchValue => {
+    this.setState({ searchValue });
   };
 
   render() {
     return (
       <>
         <SearchBar onSubmit={this.handleFormSubmit}></SearchBar>;
-        <ImageGallery imageName={this.state.imageName}></ImageGallery>;
+        <ImageGallery searchValue={this.state.searchValue}></ImageGallery>;
       </>
     );
   }
