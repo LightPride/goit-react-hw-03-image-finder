@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import Notiflix from 'notiflix';
 import {
   Header,
   SearchForm,
@@ -19,7 +20,7 @@ export default class SearchBar extends Component {
   handleSubmit = event => {
     event.preventDefault();
     if (this.state.searchInput.trim() === '') {
-      alert('Search querry should not be empty!');
+      Notiflix.Notify.warning('Search querry should not be empty!');
       return;
     }
     this.props.onSubmit(this.state.searchInput);

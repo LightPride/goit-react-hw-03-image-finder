@@ -2,53 +2,81 @@ import { Component } from 'react';
 import { Gallery } from './ImageGallery.styled';
 import { ImageGalleryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
 import Button from 'components/Button/Button';
-
-const BASE_URL = 'https://pixabay.com/api/';
-
-const API_KEY = '35698435-4c63849f1d133deb699669e72';
+import Loader from 'components/Loader/Loader';
+import { getImages } from 'api';
+import Notiflix from 'notiflix';
 
 export default class ImageGallery extends Component {
   state = {
     images: null,
     status: 'idle',
     error: null,
-    page: 1,
+    currentPage: 1,
   };
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.searchValue !== this.props.searchValue) {
-      fetch(
-        `${BASE_URL}?q=${this.props.searchValue}&page=${this.state.page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
-      )
-        .then(res => {
-          if (res.ok) {
-            return res.json();
-          }
-          return Promise.reject(new Error('oops... something went wrong...'));
-        })
-        .then(images => {
-          if (images.hits.length > 0) {
-            this.setState({ images: images, status: 'resolved' });
-          } else if (images.hits.length === 0) {
-            throw new Error(
-              "We're sorry, there are no pictures for your search :("
-            );
-          }
-        })
-        .catch(error => {
-          this.setState({ error, status: 'rejected' });
-        });
+      this.fetchImages();
+    }
+    if (prevState.currentPage !== this.state.currentPage) {
+      this.fetchMoreImages();
     }
   }
 
+  fetchMoreImages = async () => {
+    const { searchValue } = this.props;
+    const { currentPage } = this.state;
+    await this.setState({ status: 'pending2' });
+    try {
+      const data = await getImages({ searchValue, currentPage });
+
+      if (data.hits.length > 0) {
+        this.setState(prevState => ({
+          images: {
+            ...prevState.images,
+            hits: [...(prevState.images?.hits || []), ...data.hits],
+          },
+          status: 'resolved',
+        }));
+      } else if (data.hits.length < 12) {
+        console.log(data.hits);
+        Notiflix.Notify.warning(
+          "We're sorry, but you've reached the end of search results."
+        );
+      }
+    } catch (error) {
+      this.setState({ error, status: 'rejected' });
+    }
+  };
+
+  fetchImages = async () => {
+    const { searchValue } = this.props;
+    const currentPage = 1;
+    await this.setState({ status: 'pending' });
+    try {
+      const data = await getImages({ searchValue, currentPage });
+
+      if (data.hits.length > 0) {
+        this.setState({ images: data, status: 'resolved' });
+      } else if (data.hits.length === 0) {
+        Notiflix.Notify.failure("We're sorry, there are no matches found :(");
+        throw new Error("We're sorry, there are no matches found :(");
+      }
+    } catch (error) {
+      this.setState({ error, status: 'rejected' });
+    }
+  };
+
   onLoadMore = () => {
-    this.state.page += 1;
-    console.log(this.state.page);
+    this.setState(prevState => ({
+      currentPage: prevState.currentPage + 1,
+    }));
   };
 
   render() {
     return (
       <>
+        {this.state.status === 'pending' && <Loader></Loader>}
         {this.state.status === 'idle' && (
           <h2
             style={{
@@ -73,6 +101,7 @@ export default class ImageGallery extends Component {
                 }
               )}
             </Gallery>
+            {this.state.status === 'pending2' && <Loader></Loader>}
             <Button onClick={this.onLoadMore}></Button>
           </>
         )}
