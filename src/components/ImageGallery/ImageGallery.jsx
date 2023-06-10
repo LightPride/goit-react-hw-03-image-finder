@@ -26,12 +26,12 @@ export default class ImageGallery extends Component {
   fetchMoreImages = async () => {
     const { searchValue } = this.props;
     const { currentPage } = this.state;
-    await this.setState({ status: 'pending2' });
+
     try {
       const data = await getImages({ searchValue, currentPage });
 
       if (data.hits.length > 0) {
-        this.setState(prevState => ({
+        await this.setState(prevState => ({
           images: {
             ...prevState.images,
             hits: [...(prevState.images?.hits || []), ...data.hits],
@@ -57,7 +57,7 @@ export default class ImageGallery extends Component {
       const data = await getImages({ searchValue, currentPage });
 
       if (data.hits.length > 0) {
-        this.setState({ images: data, status: 'resolved' });
+        await this.setState({ images: data, status: 'resolved' });
       } else if (data.hits.length === 0) {
         Notiflix.Notify.failure("We're sorry, there are no matches found :(");
         throw new Error("We're sorry, there are no matches found :(");
@@ -101,7 +101,7 @@ export default class ImageGallery extends Component {
                 }
               )}
             </Gallery>
-            {this.state.status === 'pending2' && <Loader></Loader>}
+
             <Button onClick={this.onLoadMore}></Button>
           </>
         )}
