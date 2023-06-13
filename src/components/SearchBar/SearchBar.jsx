@@ -1,10 +1,10 @@
 import { Component } from 'react';
+import { FaSearch } from 'react-icons/fa';
 import Notiflix from 'notiflix';
 import {
   Header,
   SearchForm,
   SearchFormButton,
-  SearchFormButtonLabel,
   SearchFormInput,
 } from './SearchBar.styled';
 
@@ -32,7 +32,7 @@ export default class SearchBar extends Component {
       <Header onSubmit={this.handleSubmit}>
         <SearchForm>
           <SearchFormButton type="submit">
-            <SearchFormButtonLabel>Search</SearchFormButtonLabel>
+            <FaSearch />
           </SearchFormButton>
 
           <SearchFormInput

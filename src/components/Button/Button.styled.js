@@ -9,7 +9,10 @@ export const LoadButton = styled.button`
   cursor: pointer;
   direction: ltr;
   display: block;
-  margin: 20px auto 0;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
   font-family: 'SF Pro Text', 'SF Pro Icons', 'AOS Icons', 'Helvetica Neue',
     Helvetica, Arial, sans-serif;
   font-size: 17px;
