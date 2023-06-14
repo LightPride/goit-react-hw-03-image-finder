@@ -1,5 +1,6 @@
 import React from 'react';
 import { ImgModal, Overlay } from './Modal.styled';
+
 class Modal extends React.Component {
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown);
@@ -12,11 +13,19 @@ class Modal extends React.Component {
       this.props.handleModalClose();
     }
   };
-
+  handleBackdropClose = event => {
+    if (event.target === event.currentTarget) {
+      this.props.handleModalClose();
+    }
+  };
   render() {
     const { largeImage } = this.props;
     return (
-      <Overlay className="overlay" onClick={this.props.handleModalClose}>
+      <Overlay
+        className="overlay"
+        id="overlay"
+        onClick={this.handleBackdropClose}
+      >
         <ImgModal className="modal">
           <img src={largeImage} alt="name" />
         </ImgModal>

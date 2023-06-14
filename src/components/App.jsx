@@ -34,12 +34,12 @@ export default class App extends Component {
       const data = await getImages({ nextQuery, nextPage });
       const showBtn = nextPage < Math.ceil(data.totalHits / 12);
       if (data.hits.length === 0) {
-        await this.setState({ showBtn: false });
+        this.setState({ showBtn });
         Notiflix.Notify.failure("We're sorry, there are no matches found :(");
         throw new Error("We're sorry, there are no matches found :(");
       }
       if (data.hits.length < 12) {
-        this.setState({ showBtn: false });
+        this.setState({ showBtn });
         Notiflix.Notify.warning(
           "We're sorry, but you've reached the end of search results."
         );
@@ -47,7 +47,7 @@ export default class App extends Component {
       this.setState(prevState => ({
         images: [...prevState.images, ...data.hits],
         status: 'resolved',
-        showBtn: showBtn,
+        showBtn,
       }));
     } catch (error) {
       this.setState({ error, status: 'rejected' });
@@ -83,11 +83,7 @@ export default class App extends Component {
           </h2>
         )}
         {this.state.status === 'resolved' && (
-          <ImageGallery
-            images={this.state.images}
-            status={this.state.status}
-            error={this.state.error}
-          ></ImageGallery>
+          <ImageGallery images={this.state.images}></ImageGallery>
         )}
         {this.state.showBtn && <Button onClick={this.onLoadMore}></Button>}
         {this.state.status === 'rejected' && (
