@@ -55,6 +55,9 @@ export default class App extends Component {
   };
 
   handleFormSubmit = searchValue => {
+    if (this.state.searchValue === searchValue) {
+      return;
+    }
     this.setState({ searchValue: searchValue, images: [], page: 1 });
   };
 
