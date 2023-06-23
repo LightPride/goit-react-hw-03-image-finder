@@ -44,8 +44,12 @@ export default class App extends Component {
           "We're sorry, but you've reached the end of search results."
         );
       }
+      const getNormalizedHits = hits =>
+        hits.map(({ id, largeImageURL, webformatURL, tags }) => {
+          return { id, largeImageURL, webformatURL, tags };
+        });
       this.setState(prevState => ({
-        images: [...prevState.images, ...data.hits],
+        images: [...prevState.images, ...getNormalizedHits(data.hits)],
         status: 'resolved',
         showBtn,
       }));
@@ -58,21 +62,29 @@ export default class App extends Component {
     if (this.state.searchValue === searchValue) {
       return;
     }
-    this.setState({ searchValue: searchValue, images: [], page: 1 });
+    this.setState({
+      showBtn: false,
+      status: 'pending',
+      searchValue: searchValue,
+      images: [],
+      page: 1,
+    });
   };
 
   onLoadMore = () => {
     this.setState(prevState => ({
       page: prevState.page + 1,
+      status: 'pending',
+      showBtn: false,
     }));
   };
 
   render() {
+    const { status, showBtn, error, images } = this.state;
     return (
       <>
-        <SearchBar onSubmit={this.handleFormSubmit}></SearchBar>;
-        {this.state.status === 'pending' && <Loader></Loader>}
-        {this.state.status === 'idle' && (
+        <SearchBar onSubmit={this.handleFormSubmit}></SearchBar>
+        {status === 'idle' && (
           <h2
             style={{
               textAlign: 'center',
@@ -82,18 +94,19 @@ export default class App extends Component {
             Lets find some pictures!
           </h2>
         )}
-        {this.state.status === 'resolved' && (
-          <ImageGallery images={this.state.images}></ImageGallery>
+        {(status === 'resolved' || status === 'pending') && (
+          <ImageGallery images={images}></ImageGallery>
         )}
-        {this.state.showBtn && <Button onClick={this.onLoadMore}></Button>}
-        {this.state.status === 'rejected' && (
+        {status === 'pending' && <Loader></Loader>}
+        {showBtn && <Button onClick={this.onLoadMore}></Button>}
+        {status === 'rejected' && (
           <h1
             style={{
               textAlign: 'center',
               marginTop: '50px',
             }}
           >
-            {this.state.error.message}
+            {error.message}
           </h1>
         )}
       </>
